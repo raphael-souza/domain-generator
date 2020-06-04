@@ -1,13 +1,41 @@
 <template>
   <div>
-    <div class="text-center">
-      <h1>NameGator</h1>
-      <br />
-      <h6 class="text-secondary">Gerador de nomes utilizando Vue.js, GraphQL e Node.js</h6>
-    </div>
-
     <div id="main">
-      <DomainList></DomainList>
+      <div class="container">
+        <div class="row">
+
+          <div class="col-md">
+            <appItemList title="Prefixos" v-bind:items="prefixes" v-on:addItem="addPrefix" v-on:deleteItem="deletePrefix"></appItemList>
+          </div>
+
+          <div class="col-md">
+            <appItemList title="Sufixos" v-bind:items="sufixes" v-on:addItem="addSufix" v-on:deleteItem="deleteSufix"></appItemList>
+
+          </div>
+        </div>
+
+        <br/>
+        <h5>
+          Domínios
+          <span class="bagde badge-info">{{domains.length}}</span>
+        </h5>
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item" v-for="domain in domains" v-bind:key="domain.name">
+                <div class="row">
+                  <div class="col-md ">
+                    {{domain.name}}
+                  </div>
+                  <div class="col-md text-right">
+                    <a class="btn btn-info" v-bind:href="domain.checkout" target="_black"><span class="fa fa-shopping-cart"></span></a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -15,12 +43,11 @@
 <script>
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
-import DomainList from "./components/DomainList"
+import AppItemList from "./AppItemList";
 export default {
-  name: "App",
+  name: "DomainList",
   components: {
-    DomainList,
-
+    AppItemList
   },
   data: function() {
     return {
@@ -73,12 +100,5 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
