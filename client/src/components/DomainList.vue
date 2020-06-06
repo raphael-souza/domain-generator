@@ -103,12 +103,12 @@ export default {
       data: {
         query: `
           {
-            prefixes {
+            prefixes: items (type: "prefix") {
               id
               type
               description
             }
-            sufixes {
+            sufixes: items (type: "sufix") {
               description
             }
           }
@@ -118,6 +118,7 @@ export default {
       const query = response.data;
       this.prefixes = query.data.prefixes.map(prefix => prefix.description);
       this.sufixes = query.data.sufixes.map(sufix => sufix.description);
+      console.log(query.data);
     });
   },
  
