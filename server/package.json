@@ -1,0 +1,16 @@
+{
+  "name": "nagator-server",
+  "version": "1.0.0",
+  "description": "server to front end vue",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raphael Souza",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.14.2",
+    "axios": "^0.19.2",
+    "graphql": "^15.0.0"
+  }
+}

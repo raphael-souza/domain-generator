@@ -44,6 +44,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
 import AppItemList from "./AppItemList";
+import axios from "axios/dist/axios";
 export default {
   name: "DomainList",
   components: {
@@ -51,8 +52,8 @@ export default {
   },
   data: function() {
     return {
-      prefixes: ["Air", "Jet", "Fligth"],
-      sufixes: ["Hub", "Station", "Mart"],
+      prefixes: [],
+      sufixes: [],
     };
   },
   methods: {
@@ -93,8 +94,32 @@ export default {
         }
       }
       return domains;
-    }
-  }
+    },
+  },
+  created() {
+    axios({
+      url: "http://localhost:4000",
+      method: "post",
+      data: {
+        query: `
+          {
+            prefixes {
+              id
+              type
+              description
+            }
+            sufixes {
+              description
+            }
+          }
+        `
+      }
+    }).then(response => {
+      const query = response.data;
+      this.prefixes = query.data.prefixes.map(prefix => prefix.description);
+      this.sufixes = query.data.sufixes.map(sufix => sufix.description);
+    });
+  },
  
 };
 </script>
