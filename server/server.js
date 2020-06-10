@@ -18,6 +18,7 @@ const typeDefs = `
 
   type Mutation {
     saveItem(item: ItemInput): Item
+    deleteItem(id: Int): Boolean
   }
 `;
 const items = [
@@ -42,6 +43,16 @@ const resolvers = {
       item.id = Math.floor(Math.random() * 1000);
       items.push(item);
       return item
+    },
+    deleteItem(_,args) {
+      const id = args.id;
+      const item = items.find(item => item.id === id);
+      console.log(item);
+      if (!item) {
+        return false;
+      }
+      items.splice(items.indexOf(item, 1));
+      return true
     }
   }
 }
