@@ -9,7 +9,7 @@
               v-bind:items="items.prefix"
               v-on:addItem="addItem"
               type="prefix"
-              v-on:deleteItem="deletePrefix"
+              v-on:deleteItem="deleteItem"
             ></appItemList>
           </div>
 
@@ -19,7 +19,7 @@
               v-bind:items="items.sufix"
               v-on:addItem="addItem"
               type="sufix"
-              v-on:deleteItem="deleteSufix"
+              v-on:deleteItem="deleteItem"
             ></appItemList>
           </div>
         </div>
@@ -34,7 +34,12 @@
             <ul class="list-group">
               <li class="list-group-item" v-for="domain in domains" v-bind:key="domain.name">
                 <div class="row">
-                  <div class="col-md">{{domain.name}}</div>
+                  <div class="col-md-6">
+                    {{domain.name}}
+                  </div>
+                  <div class="col-md-3">
+                    <span class="badge badge-info">{{ domain.available ? "Disponível" : "Não disponível" }}</span>
+                  </div>
                   <div class="col-md text-right">
                     <a class="btn btn-info" v-bind:href="domain.checkout" target="_black">
                       <span class="fa fa-shopping-cart"></span>
@@ -66,11 +71,12 @@ export default {
       items: {
         prefix: [],
         sufix: []
-      }
+      },
+      domains: []
     };
   },
   methods: {
-    addPrefix(prefix) {
+    addItem(item) {
       axios({
         url: "http://localhost:4000",
         method: "post",
@@ -85,20 +91,15 @@ export default {
             }
           `,
           variables: {
-            item: {
-              type: "prefix",
-              description: prefix
-            }
+            item
           }
         }
       }).then( response => {
         const query = response.data;
-        const newPrefix = query.data.newPrefix;
-        this.items.prefix.push(newPrefix.description);
+        const newItem = query.data.newItem;
+        this.items[item.type].push(newItem);
+        this.generateDomains();
       });
-    },
-    addSufix(sufix) {
-      this.items.sufix.push(sufix);
     },
     generate() {
       this.domains = [];
@@ -108,29 +109,28 @@ export default {
         }
       }
     },
-    deletePrefix(prefix) {
+    deleteItem(item) {
       axios ({
         url: "http://localhost:4000",
         method: "post",
         data: {
           query: `
             mutation ($id: Int) {
-              deleteItem(id: $id)
+              seleted: deleteItem(id: $id)
             }
           `,
           variables: {
-            id: prefix.id
+            id: item.id
           }
         }
-      }).then(() =>
-        this.getItems("prefix")
-      )
-    },
-    deleteSufix(sufix) {
-      this.items.sufix.splice(this.items.sufix.indexOf(sufix), 1);
+      }).then(() => {
+        this.items[item.type].splice(this.items[item.type].indexOf(item), 1);
+        this.generateDomains();
+        
+      });
     },
     getItems(type) {
-      axios({
+      return axios({
         url: "http://localhost:4000",
         method: "post",
         data: {
@@ -153,29 +153,36 @@ export default {
         console.log(query.data);
       });
     },
+    generateDomains() {
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+            mutation {
+              domains: generateDomains {
+                name
+                checkout
+                available
+              }
+            }
+          `
+        }
+      }).then((response) => {
+        const query = response.data;
+        this.domains = query.data.domains;
+      });
+    }
    
   },
-  computed: {
-    domains() {
-      console.log("generating domains...");
-      const domains = [];
-      for (const prefix of this.items.prefix) {
-        for (const sufix of this.items.sufix) {
-          const name = prefix.description + sufix.description;
-          const url = name.toLowerCase();
-          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com`;
-          domains.push({
-            name,
-            checkout
-          });
-        }
-      }
-      return domains;
-    }
-  },
+ 
   created() {
-    this.getItems('prefix');
-    this.getItems('sufix');
+    Promise.all ([
+    this.getItems('prefix'),
+    this.getItems('sufix')
+    ]).then(() => {
+      this.generateDomains();
+    });
   }
 };
 </script>
