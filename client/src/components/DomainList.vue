@@ -56,10 +56,8 @@
 </template>
 
 <script>
-import "bootstrap/dist/css/bootstrap.css";
-import "font-awesome/css/font-awesome.css";
+import { mapState, mapActions } from "vuex";
 import AppItemList from "./AppItemList";
-import axios from "axios/dist/axios";
 
 export default {
   name: "DomainList",
@@ -70,104 +68,40 @@ export default {
     return {}
   },
   methods: {
-    addItem(item) {
-      axios({
-        url: "http://localhost:4000",
-        method: "post",
-        data: {
-          query: `
-            mutation ($item: ItemInput) {
-              newItem: saveItem(item: $item) {
-                id
-                type
-                description
-              }
-            }
-          `,
-          variables: {
-            item
-          }
-        }
-      }).then( response => {
-        const query = response.data;
-        const newItem = query.data.newItem;
-        this.items[item.type].push(newItem);
-        this.generateDomains();
-      });
-    },
+
+    // addItem(item) {
+    //   this.$store.dispatch("addItem", item);
+    // },
+    // deleteItem(item) {
+    //   this.$store.dispatch("deleteItem", item);
+    // },
+    // getItems(type) {
+    //   this.$store.dispatch("getItems", type);
+      
+    // },
+    // generateDomains() {
+    //   this.$store.dispatch("generateDomains"); 
+    // }
+    ...mapActions(["addItem", "deleteItem", "getItems", "generateDomains"]),
+
     generate() {
-      this.domains = [];
-      for (const prefix of this.items.prefix) {
-        for (const sufix of this.items.sufix) {
-          this.domains.push(prefix + " " + sufix);
-        }
-      }
-    },
-    deleteItem(item) {
-      axios ({
-        url: "http://localhost:4000",
-        method: "post",
-        data: {
-          query: `
-            mutation ($id: Int) {
-              seleted: deleteItem(id: $id)
-            }
-          `,
-          variables: {
-            id: item.id
+        this.domains = [];
+        for (const prefix of this.items.prefix) {
+          for (const sufix of this.items.sufix) {
+            this.domains.push(prefix + " " + sufix);
           }
         }
-      }).then(() => {
-        this.items[item.type].splice(this.items[item.type].indexOf(item), 1);
-        this.generateDomains();
-        
-      });
-    },
-    getItems(type) {
-      return axios({
-        url: "http://localhost:4000",
-        method: "post",
-        data: {
-          query: `
-            query ($type: String) {
-              items: items (type: $type) {
-                id
-                type
-                description
-              }
-            }
-        `,
-        variables: {
-          type
-        }
-        }
-      }).then(response => {
-        const query = response.data;
-        this.items[type] = query.data.items;
-        console.log(query.data);
-      });
-    },
-    generateDomains() {
-      axios({
-        url: "http://localhost:4000",
-        method: "post",
-        data: {
-          query: `
-            mutation {
-              domains: generateDomains {
-                name
-                checkout
-                available
-              }
-            }
-          `
-        }
-      }).then((response) => {
-        const query = response.data;
-        this.domains = query.data.domains;
-      });
-    }
-   
+      },
+  },
+  computed: {
+    // items() {
+    //   return this.$store.state.items;
+    // },
+    // domains() {
+    //   return this.$store.state.domains;
+    // }
+
+    ...mapState(["items", "domains"])
   },
  
   created() {
