@@ -1,5 +1,8 @@
 # full-stack-vue-graphql-node
 
+## execute server
+node server.js
+
 ## Project setup
 ```
 npm install

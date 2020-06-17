@@ -1,5 +1,6 @@
 const { ApolloServer } = require("apollo-server");
 const dns = require("dns");
+const { domain } = require("process");
 
 const typeDefs = `
   type Item {
@@ -10,6 +11,7 @@ const typeDefs = `
 
   type Domain {
     name: String,
+    extention: String
     checkout: String
     available: Boolean
   }
@@ -26,7 +28,9 @@ const typeDefs = `
   type Mutation {
     saveItem(item: ItemInput): Item
     deleteItem(id: Int): Boolean
-    generateDomains: [Domain]
+    generateDomains(name: String): [Domain]
+    generateDomain(name: String): [Domain]
+
   }
 `;
 const items = [
@@ -89,6 +93,25 @@ const resolvers = {
             available
           });
         }
+      }
+
+      return domains;
+    },
+    async generateDomain(_, args) {
+      const name = args.name;
+      const extentions = [".com.br", ".com", ".net", ".org"];
+      const domains = [];
+
+      for (const extention of extentions) {
+        const url = name.toLowerCase();
+        const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&ld=${extention}`;
+        const available = await isDomainAvailable(`${url}${extention}`);
+        domains.push({
+          name,
+          extention,
+          checkout,
+          available
+        });
       }
 
       return domains;

@@ -67,13 +67,7 @@ export default {
     AppItemList
   },
   data: function() {
-    return {
-      items: {
-        prefix: [],
-        sufix: []
-      },
-      domains: []
-    };
+    return {}
   },
   methods: {
     addItem(item) {
