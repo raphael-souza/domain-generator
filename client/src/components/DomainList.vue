@@ -40,6 +40,13 @@
                   <div class="col-md-3">
                     <span class="badge badge-info">{{ domain.available ? "Disponível" : "Não disponível" }}</span>
                   </div>
+
+                  <div class="col-md text-right">
+                    <router-link class="btn btn-info" :to="`'/domains/'${domain.name}`">
+                      <span class="fa fa-search"></span>
+                    </router-link>
+                  </div>
+
                   <div class="col-md text-right">
                     <a class="btn btn-info" v-bind:href="domain.checkout" target="_black">
                       <span class="fa fa-shopping-cart"></span>
@@ -105,12 +112,12 @@ export default {
   },
  
   created() {
-    Promise.all ([
-    this.getItems('prefix'),
-    this.getItems('sufix')
-    ]).then(() => {
-      this.generateDomains();
-    });
+  //   Promise.all ([
+  //   this.getItems('prefix'),
+  //   this.getItems('sufix')
+  //   ]).then(() => {
+  //     this.generateDomains();
+  //   });
   }
 };
 </script>
