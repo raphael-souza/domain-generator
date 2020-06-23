@@ -34,7 +34,8 @@ const store = new Vuex.Store({
       state.items[type] = items;
     },
     setDomains(state, payload) {
-
+      const { domains } = payload;
+      state.domains = domains;
     }
 
   },
@@ -135,6 +136,13 @@ const store = new Vuex.Store({
     }
   }
 });
+
+Promise.all ([
+  store.dispatch("getItems", "prefix"),
+  store.dispatch("getItems", "sufix")
+]).then(() => {
+    store.dispatch("generateDomains");
+  });
 
 const router = new VueRouter({
   routes: [
